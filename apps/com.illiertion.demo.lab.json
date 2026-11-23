@@ -1,0 +1,55 @@
+{
+  "format": "NAPP-APP",
+  "schema_version": 1,
+  "app": {
+    "id": "com.illiertion.demo.lab",
+    "name": "NAPP Demo Lab",
+    "description": "Test application for the NAPP runtime: runtime facts, storage probe, permission checklist and event log.",
+    "author": "ILLIERTION",
+    "category": "utilities",
+    "icon": "https://raw.githubusercontent.com/ILLIERTION/NAPP-Repository/main/icons/com.illiertion.demo.lab.png",
+    "license": "MIT"
+  },
+  "compatibility": {
+    "runtime": "chromium",
+    "minimum_runtime_version": "1.0.0",
+    "minimum_sdk_version": "1.0.0",
+    "platforms": [
+      "windows-x64",
+      "linux-x64"
+    ]
+  },
+  "release": {
+    "latest": "1.0.1",
+    "versions": {
+      "1.0.1": {
+        "release_date": "2026-11-20",
+        "changelog": "Notification test now shows an in-app notice, matching the host policy that blocks OS toasts.",
+        "platforms": [
+          "windows-x64",
+          "linux-x64"
+        ],
+        "package": {
+          "type": "web",
+          "url": "https://raw.githubusercontent.com/ILLIERTION/NAPP-Repository/main/packages/com.illiertion.demo.lab/1.0.1.ipkg",
+          "sha256": "c95d79351e0316b908626a37b0cf62fdca2f500673a1c47a7852f47b41480520",
+          "size": 20347
+        }
+      },
+      "1.0.0": {
+        "release_date": "2026-11-20",
+        "changelog": "Runtime information, storage probe, permission checklist and event log.",
+        "platforms": [
+          "windows-x64",
+          "linux-x64"
+        ],
+        "package": {
+          "type": "web",
+          "url": "https://raw.githubusercontent.com/ILLIERTION/NAPP-Repository/main/packages/com.illiertion.demo.lab/1.0.0.ipkg",
+          "sha256": "0bec5667d77b0daa013d461468a4441df32063f2fcdd1c81605fda9f1e464b8a",
+          "size": 19968
+        }
+      }
+    }
+  }
+}

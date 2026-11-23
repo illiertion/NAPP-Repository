@@ -1,0 +1,35 @@
+{
+  "format": "IPKG",
+  "format_version": 1,
+  "app": {
+    "id": "com.illiertion.demo.lab",
+    "name": "NAPP Demo Lab",
+    "version": "1.0.1",
+    "description": "Test application for the NAPP runtime: runtime facts, storage probe, permission checklist and event log.",
+    "author": "ILLIERTION",
+    "license": "MIT"
+  },
+  "runtime": {
+    "type": "chromium",
+    "minimum_version": "1.0.0"
+  },
+  "sdk": {
+    "minimum_version": "1.0.0"
+  },
+  "entry": "app/index.html",
+  "platforms": [
+    "windows-x64",
+    "linux-x64"
+  ],
+  "permissions": [
+    "storage",
+    "notifications",
+    "clipboard",
+    "system-info",
+    "external-links"
+  ],
+  "metadata": {
+    "icon": "metadata/icon.png",
+    "preview": "metadata/preview.png"
+  }
+}

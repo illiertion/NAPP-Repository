@@ -1,0 +1,9 @@
+{
+  "category": "utilities",
+  "featured": true,
+  "released": { "1.0.0": "2026-11-20", "1.0.1": "2026-11-20" },
+  "changelog": {
+    "1.0.1": "Notification test now shows an in-app notice, matching the host policy that blocks OS toasts.",
+    "1.0.0": "Runtime information, storage probe, permission checklist and event log."
+  }
+}

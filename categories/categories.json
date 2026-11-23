@@ -1,0 +1,10 @@
+{
+  "format": "NAPP-CATEGORIES",
+  "schema_version": 1,
+  "categories": [
+    { "id": "developer", "name": "Developer tools", "description": "Packaging, debugging and build helpers." },
+    { "id": "utilities", "name": "Utilities" },
+    { "id": "media", "name": "Media" },
+    { "id": "games", "name": "Games" }
+  ]
+}

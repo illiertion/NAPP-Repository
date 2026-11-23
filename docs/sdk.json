@@ -1,0 +1,88 @@
+{
+  "format": "NAPP-DOCS",
+  "schema_version": 1,
+  "title": "NAPP SDK",
+  "updated": "2026-11-23",
+  "sections": [
+    {
+      "id": "overview",
+      "title": "Overview",
+      "summary": "What a NAPP app is and how it is loaded.",
+      "body": "A NAPP app is a folder of static web files served through the `napp://<appId>/` scheme. There is no Node.js, no local server and no native addon: HTML, CSS, JavaScript, WASM and images are read straight from the installed package.\n\nEach running app gets its own process, its own CEF profile and its own data folder, so one app cannot read another app's files or storage.\n\n## Package layout\n\n```\nmanifest.json          required, at the archive root\nmetadata/icon.png      store icon (PNG)\nmetadata/preview.png   store preview (optional)\napp/index.html         entry document\napp/styles.css\napp/app.js\n```\n\nUse IPKG Studio to produce the archive; it writes `manifest.json` at the root and computes the SHA-256 the repository needs."
+    },
+    {
+      "id": "manifest",
+      "title": "Manifest",
+      "summary": "Required fields in manifest.json.",
+      "body": "## Minimum document\n\n```json\n{\n  \"format\": \"IPKG\",\n  \"format_version\": 1,\n  \"app\": {\n    \"id\": \"com.example.hello\",\n    \"name\": \"Hello NAPP\",\n    \"version\": \"1.0.0\",\n    \"description\": \"A small web app.\",\n    \"author\": \"Example\",\n    \"license\": \"MIT\"\n  },\n  \"runtime\": { \"type\": \"chromium\", \"minimum_version\": \"1.0.0\" },\n  \"sdk\": { \"minimum_version\": \"1.0.0\" },\n  \"entry\": \"app/index.html\",\n  \"platforms\": [\"windows-x64\"],\n  \"permissions\": [\"storage\"],\n  \"metadata\": { \"icon\": \"metadata/icon.png\" }\n}\n```\n\n## Rules\n\n- `app.id` is reverse-DNS and lowercase: `com.example.hello`.\n- `app.version` is semantic: `1.0.0`, `2.1.0-beta.1`.\n- `entry` is relative to the package root and must exist. Paths containing `..` are rejected.\n- `platforms` lists what the app runs on; the launcher hides unsupported targets.\n- `metadata.icon` must be inside the package. Studio can generate one when you do not have artwork.\n- `metadata.icon` is what the launcher, store and shortcuts show. `window.icon` (below) is what the running window shows.\n\n## Permissions\n\n`storage`, `window`, `notifications`, `dialog`, `filesystem`, `clipboard`, `external-links`, `system-info`. Every one is granted at launch; the launcher shows the list in Library → Permissions.\n## Window\n\nAn optional `window` block shapes the window the app runs in. Declaring it\nrequires the `window` permission, and the launcher asks for it at install time.\n\n```json\n\"permissions\": [\"window\"],\n\"window\": {\n  \"title\": \"Hello NAPP\",\n  \"width\": 1100,\n  \"height\": 760,\n  \"icon\": \"metadata/window-icon.png\",\n  \"tray\": true\n}\n```\n\n- `title` — 1 to 80 characters. Defaults to `app.name`.\n- `width`, `height` — opening size in logical pixels. Clamped to the screen area\n  under the mouse, so a large value never opens off-screen.\n- `icon` — the image the window, taskbar button, Alt+Tab and tray icon are drawn\n  from. PNG or WebP, 256 px or larger recommended. Without it the app gets the\n  NAPP icon. Needs runtime 1.4.0; older runtimes reject the key outright.\n- `tray` — keep running in the notification area when the window closes. Quit\n  from the tray menu.\n\nIf the user declines the `window` permission at install time, the app runs with\nthe default title, size, icon and no tray icon. Nothing in the block is applied.\n"
+    },
+    {
+      "id": "environment",
+      "title": "window.napp",
+      "summary": "Read the launcher's language, theme, accent and repository URL.",
+      "body": "Every HTML document served from `napp://` receives a small script before `</head>` that defines `window.napp`. Read it instead of guessing the user's settings.\n\n```js\nconst { language, theme, accent, accentColor, repositoryUrl } = window.napp;\ndocument.documentElement.dataset.nappTheme = theme;\n```\n\nThe runtime also sets `data-napp-theme`, `data-napp-language` and `color-scheme` on `<html>`, and publishes CSS custom properties:\n\n```css\nbody {\n  background: var(--napp-bg);\n  color: var(--napp-text);\n  accent-color: var(--napp-accent);\n}\n```\n\nAvailable variables: `--napp-accent`, `--napp-bg`, `--napp-surface`, `--napp-surface-alt`, `--napp-border`, `--napp-text`, `--napp-muted`.\n\n`window.napp` is frozen. It reflects the launcher settings at launch time; restart the app to pick up a later change."
+    },
+    {
+      "id": "host-routes",
+      "title": "Host routes",
+      "summary": "Save files and query the session from the page.",
+      "body": "Host routes live under `napp://<appId>/__host/` and never touch the package files.\n\n## Export a file\n\n```js\nconst response = await fetch(\"/__host/export/hello.ipkg\", {\n  method: \"POST\",\n  body: bytes,\n});\nconst { path, name, bytes: written } = await response.json();\n```\n\nThe host sanitises the file name, writes atomically into the app's `downloads` folder, avoids overwriting an existing file (`name (2).ext`) and rejects bodies above 64 MB. This is the supported way to produce a download: the Chromium download manager cannot choose a safe target inside the sandboxed app.\n\n## Session info\n\n```js\nconst info = await (await fetch(\"/__host/info\")).json();\n```\n\nReturns the same object as `window.napp`, including `permissions` and `runtimeVersion`."
+    },
+    {
+      "id": "permissions",
+      "title": "Permissions and prompts",
+      "summary": "Web permissions are answered by the host, not by Chromium.",
+      "body": "The runtime answers every browser permission prompt itself, so a page never shows the Chromium bubble or a native dialog.\n\n- Camera, microphone, geolocation, clipboard, MIDI, fonts, storage and the rest are granted automatically.\n- **Notifications** (runtime 1.1.0+) become real system notifications, never Chromium toasts. Declare `notifications` in the manifest; only apps the user approved can send them (otherwise `Notification.permission` is `denied`). You can also call `window.napp.notify(title, body)`. Limit: 5 per 10 seconds.\n- Popups, context menus, JS dialogs, print preview and download bars from Chromium are blocked. With the `dialog` permission, `alert/confirm/prompt` use native OS dialogs.\n- DevTools and remote inspection are disabled for app pages.\n\nBecause grants are automatic, request the narrowest permission you need at the moment you need it (`getUserMedia`, `navigator.geolocation`) and handle the failure path — a denial still returns the normal browser error."
+    },
+    {
+      "id": "publishing",
+      "title": "Publishing to the store",
+      "summary": "Turn a package into a store listing.",
+      "body": "The launcher reads a repository in three steps:\n\n1. `repository.json` — the index of apps.\n2. `apps/<appId>.json` — name, description, category, versions, size and SHA-256.\n3. `packages/<appId>/<version>.ipkg` — the archive itself.\n\n## Publish flow\n\n1. Build the package in IPKG Studio.\n2. Copy it to `<repository>/apps-src/<appId>/` alongside `manifest.json` and `metadata/`.\n3. Run `python scripts/build_repository.py --base-url https://raw.githubusercontent.com/<owner>/<repo>/main/`.\n4. Commit `repository.json`, `apps/`, `packages/`, `icons/` and `docs/`, then push.\n\nDocumentation (`docs/sdk.json`) is downloaded by Studio from the repository at runtime — editing it needs no new Studio release."
+    },
+    {
+      "id": "distribution",
+      "title": "Distributing the launcher",
+      "summary": "Portable and installed builds from one payload.",
+      "body": "`scripts/build-cef.bat --dist` (or `scripts/make-dist.ps1` on its own) deploys the launcher with `windeployqt`, stages the web runtime and produces one payload plus two distributables.\n\n- `dist/NAPP-<version>-Setup.exe` — a single-file installer with the payload inside. It offers Install or Portable, copies the files, adds Start Menu / desktop shortcuts and writes an uninstaller entry. Unattended: `NAPP-Setup.exe --install \"D:\\Apps\\NAPP\" --quiet`.\n- `dist/NAPP-<version>-portable.zip` — unzip and run `payload/NAPP.exe`; settings, runtimes and app data stay in `%LOCALAPPDATA%\\illiertion\\napp`.\n- `dist/NAPP-<version>/` keeps the raw payload and the PowerShell setup scripts used during development.\n\n`scripts/make-release.ps1` gathers everything that goes to GitHub: the repository tree (including `docs/`) and the packaged apps.\n## Packaging an app as a platform-native program\n\n`python scripts/pack_app.py <app.ipkg>` turns a packaged app into a distributable\nthat looks native on each platform. It never touches the app's source: it wraps\nthe `.ipkg` in a launcher that finds NAPP, installs the package (or updates it\nwhen the bundled version changes) and starts it with `NAPP --run-app`.\n\n- `--platform windows-x64` (default on Windows) — `<Name>.exe` built from\n  `packaging/AppStub.cs` with the app's own icon baked in, the `.ipkg`,\n  `install.ps1` / `uninstall.ps1` for Start Menu and desktop shortcuts, and a\n  `README.txt`. Add `--installer` for a single-file `<app>-<version>-Setup.exe`\n  that installs per-user with shortcuts and an uninstall entry.\n- `--platform macos-arm64` — a `<Name>.app` bundle with `Info.plist`, an\n  `AppRun` launcher and an `.icns` built from the app icon.\n- `--platform linux-x64` — an `AppDir` with `AppRun`, a `.desktop` entry, the\n  icon and `install.sh` / `uninstall.sh`. Shaped so `appimagetool` can produce a\n  single `.AppImage`.\n- `--platform all` uses the `platforms` list from the manifest.\n\nOutput lands in `dist-apps/`, one folder and one `.zip` per platform. The stub\nresolves NAPP from `NAPP_HOME`, then the per-user install recorded by the setup\nprogram, then a `NAPP` sitting next to the package — so a portable NAPP and a\nshipped app folder travel together.\n\nA platform-native package is a wrapper, not a bundled browser: the target\nmachine still needs NAPP. That keeps the download small and lets one app run\nunchanged wherever the NAPP runtime exists.\n"
+    },
+    {
+      "id": "troubleshooting",
+      "title": "Troubleshooting",
+      "summary": "Where to look when an app does not start.",
+      "body": "Logs live per app under `%LOCALAPPDATA%\\illiertion\\napp\\data\\<appId>\\logs\\`.\n\n- `runtime.log` — page loads, console messages, blocked requests, export writes.\n- `cef.log` — Chromium warnings.\n\nCommon causes:\n\n- `missing asset` → the path is wrong or the file was not added to the package.\n- `blocked out-of-root request` → the entry or an asset points above the package root.\n- `foreign app id` → a request used another app's id; one process serves one app only.\n- A file picker does nothing → file inputs require a user gesture; open them from a click handler."
+    }
+  ],
+  "api": [
+    {
+      "section": "environment",
+      "name": "window.napp",
+      "returns": "ReadonlyObject",
+      "signature": "window.napp: { apiVersion, appId, appName, language, theme, accent, accentColor, repositoryUrl, runtimeVersion, platform, permissions, exportPath, isDark }",
+      "description": "Session values copied from the launcher when the app process starts. `language` is `en` or `ko`, `theme` is `dark` or `light`, `accent` is `blue`, `violet`, `mint` or `amber`."
+    },
+    {
+      "section": "environment",
+      "name": "napp:environment event",
+      "returns": "CustomEvent",
+      "signature": "document.addEventListener('napp:environment', (event) => event.detail)",
+      "description": "Dispatched once the injection script runs, for apps that load modules before reading globals.",
+      "example": "document.addEventListener('napp:environment', ({ detail }) => {\n  console.log(detail.language, detail.theme);\n});"
+    },
+    {
+      "section": "host-routes",
+      "name": "/__host/export/<file>",
+      "returns": "201 JSON",
+      "signature": "POST napp://<appId>/__host/export/<file>",
+      "description": "Writes the request body into the app's downloads folder and returns `{ path, name, bytes }`. Errors use 4xx/5xx with `{ error }`.",
+      "example": "const reply = await fetch('/__host/export/demo.ipkg', {\n  method: 'POST',\n  body: zipBytes,\n});\nconst saved = await reply.json();"
+    },
+    {
+      "section": "host-routes",
+      "name": "/__host/info",
+      "returns": "200 JSON",
+      "signature": "GET napp://<appId>/__host/info",
+      "description": "Same document as window.napp, fetched over HTTP for workers or code without access to the page global."
+    }
+  ]
+}

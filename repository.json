@@ -1,0 +1,26 @@
+{
+  "format": "NAPP-REPOSITORY",
+  "schema_version": 1,
+  "repository": {
+    "id": "com.illiertion.official",
+    "name": "ILLIERTION Official Repository",
+    "owner": "ILLIERTION",
+    "description": "Apps and tools published by ILLIERTION for NAPP, including IPKG Studio.",
+    "homepage": "https://github.com/ILLIERTION/NAPP-Repository"
+  },
+  "categories": "categories/categories.json",
+  "apps": [
+    {
+      "id": "com.illiertion.demo.lab",
+      "manifest": "apps/com.illiertion.demo.lab.json",
+      "category": "utilities",
+      "featured": true
+    },
+    {
+      "id": "com.illiertion.ipkgstudio",
+      "manifest": "apps/com.illiertion.ipkgstudio.json",
+      "category": "developer",
+      "featured": true
+    }
+  ]
+}

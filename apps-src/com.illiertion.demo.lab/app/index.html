@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NAPP Demo Lab</title>
+<style>
+  :root {
+    --bg: #0a0c10;
+    --panel: #11151c;
+    --line: #222a36;
+    --text: #eef2f8;
+    --muted: #8d97a7;
+    --accent: #3d7df0;
+    --ok: #3ecf8e;
+    --warn: #e8ac46;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    margin: 0;
+    background:
+      radial-gradient(680px 340px at 88% -12%, rgba(61, 125, 240, .26), transparent 70%),
+      var(--bg);
+    color: var(--text);
+    font: 14px/1.5 "Segoe UI", system-ui, -apple-system, sans-serif;
+    padding: 34px 30px 26px;
+  }
+  header { display: flex; align-items: center; gap: 14px; margin-bottom: 26px; }
+  .mark {
+    width: 42px; height: 42px; border-radius: 11px;
+    border: 1px solid var(--line);
+    background: #07080b url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Cg fill='none' stroke='%23eef2f8' stroke-width='1.6'%3E%3Cpath d='M13 9v20l5-4V5z'/%3E%3Cpath d='M26 5v20l-4 3'/%3E%3Cpath d='M22 25v5l8-5z'/%3E%3C/g%3E%3C/svg%3E") center/24px no-repeat;
+  }
+  h1 { font-size: 20px; margin: 0; letter-spacing: .2px; }
+  .sub { color: var(--muted); font-size: 11px; letter-spacing: 2px; text-transform: uppercase; margin: 0 0 2px; }
+  .chip {
+    margin-left: auto; font-size: 11px; color: var(--muted);
+    border: 1px solid var(--line); background: var(--panel);
+    padding: 5px 12px; border-radius: 20px;
+  }
+  .chip b { color: var(--ok); font-weight: 600; }
+  .grid { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(268px, 1fr)); }
+  section {
+    background: var(--panel); border: 1px solid var(--line);
+    border-radius: 13px; padding: 16px 16px 14px;
+  }
+  h2 {
+    font-size: 11px; letter-spacing: 1.4px; text-transform: uppercase;
+    color: var(--muted); margin: 0 0 12px; font-weight: 600;
+  }
+  dl { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 7px 14px; font-size: 12px; }
+  dt { color: var(--muted); }
+  dd { margin: 0; text-align: right; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  ul { list-style: none; margin: 0; padding: 0; font-size: 12px; }
+  li { display: flex; align-items: center; gap: 8px; padding: 4px 0; color: var(--muted); }
+  li .dot { width: 6px; height: 6px; border-radius: 3px; background: var(--ok); flex: none; }
+  li b { color: var(--text); font-weight: 500; margin-left: auto; }
+  button {
+    font: inherit; font-size: 12px; cursor: pointer; color: var(--text);
+    background: #171c25; border: 1px solid var(--line);
+    padding: 8px 14px; border-radius: 8px;
+  }
+  button:hover { border-color: #33415c; background: #1d242f; }
+  button.primary { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 600; }
+  button.primary:hover { background: #4c8bf7; }
+  .row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+  .counter { font-size: 34px; font-weight: 700; margin: 2px 0 4px; font-variant-numeric: tabular-nums; }
+  #log {
+    font: 11px/1.6 ui-monospace, "Cascadia Mono", Consolas, monospace;
+    color: var(--muted); margin: 0; padding: 0; list-style: none;
+    max-height: 132px; overflow: auto;
+  }
+  #log li { color: var(--muted); padding: 1px 0; }
+  #log li span { color: var(--warn); margin-right: 8px; }
+  footer { margin-top: 22px; color: var(--muted); font-size: 11px; display: flex; gap: 10px; }
+  footer b { color: #c8d2e2; font-weight: 500; }
+  .notice {
+    position: fixed; right: 20px; bottom: 20px; z-index: 20;
+    display: flex; flex-direction: column; gap: 2px;
+    padding: 12px 16px; border-radius: 12px;
+    background: var(--panel); border: 1px solid var(--accent);
+    box-shadow: 0 18px 48px rgba(0, 0, 0, 0.45);
+    animation: notice-in 160ms ease-out;
+  }
+  .notice b { font-size: 12px; }
+  .notice span { font-size: 11px; color: var(--muted); }
+  @keyframes notice-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+</style>
+</head>
+<body>
+  <header>
+    <div class="mark" aria-hidden="true"></div>
+    <div>
+      <p class="sub">NAPP Demo Lab</p>
+      <h1>Runtime test bench</h1>
+    </div>
+    <div class="chip">runtime <b id="runtime-state">checking…</b></div>
+  </header>
+
+  <div class="grid">
+    <section>
+      <h2>Runtime</h2>
+      <dl>
+        <dt>Page</dt><dd id="info-page">—</dd>
+        <dt>Viewport</dt><dd id="info-viewport">—</dd>
+        <dt>Device pixel ratio</dt><dd id="info-dpr">—</dd>
+        <dt>Language</dt><dd id="info-lang">—</dd>
+        <dt>CPU cores</dt><dd id="info-cores">—</dd>
+        <dt>Network</dt><dd id="info-net">—</dd>
+        <dt>Started</dt><dd id="info-time">—</dd>
+      </dl>
+    </section>
+
+    <section>
+      <h2>Storage probe</h2>
+      <p class="counter" id="count">0</p>
+      <p style="margin:0;color:var(--muted);font-size:12px">
+        <span id="storage-state">checking local storage…</span>
+      </p>
+      <div class="row">
+        <button class="primary" id="btn-count">Increment</button>
+        <button id="btn-reset">Reset</button>
+      </div>
+    </section>
+
+    <section>
+      <h2>Permissions requested</h2>
+      <ul id="permissions"></ul>
+      <div class="row">
+        <button id="btn-copy">Copy report</button>
+        <button id="btn-notify">Notify</button>
+      </div>
+    </section>
+
+    <section style="grid-column: 1 / -1">
+      <h2>Event log</h2>
+      <ul id="log"></ul>
+    </section>
+  </div>
+
+  <footer>
+    <b>NAPP Demo Lab 1.0.0</b>
+    <span>com.illiertion.demo.lab</span>
+    <span>·</span>
+    <span>Loaded through napp://</span>
+  </footer>
+
+<script>
+(function () {
+  "use strict";
+
+  var PERMISSIONS = ["storage", "notifications", "clipboard", "system-info", "external-links"];
+  var STORAGE_KEY = "napp.demo.counter";
+  var logList = document.getElementById("log");
+
+  function log(message) {
+    var item = document.createElement("li");
+    var stamp = new Date().toLocaleTimeString();
+    item.innerHTML = "<span>" + stamp + "</span>";
+    item.appendChild(document.createTextNode(message));
+    logList.prepend(item);
+    while (logList.children.length > 40) {
+      logList.removeChild(logList.lastChild);
+    }
+  }
+
+  function text(id, value) {
+    document.getElementById(id).textContent = value;
+  }
+
+  // ---- runtime facts -------------------------------------------------
+  var userAgent = navigator.userAgent || "";
+  var chromium = /Chrome\/([\d.]+)/.exec(userAgent);
+  text("info-page", location.href.replace(/^napp:\/\//, "napp://"));
+  text("info-viewport", window.innerWidth + " × " + window.innerHeight);
+  text("info-dpr", String(window.devicePixelRatio || 1));
+  text("info-lang", navigator.language || "—");
+  text("info-cores", navigator.hardwareConcurrency ? String(navigator.hardwareConcurrency) : "—");
+  text("info-net", navigator.onLine ? "online" : "offline");
+  text("info-time", new Date().toLocaleTimeString());
+  text("runtime-state", chromium ? "Chromium " + chromium[1] : "unknown");
+
+  // ---- storage probe -------------------------------------------------
+  var counter = 0;
+  try {
+    var saved = window.localStorage.getItem(STORAGE_KEY);
+    counter = saved ? parseInt(saved, 10) || 0 : 0;
+    text("storage-state", "localStorage writable · survives restarts");
+    log("storage: read counter = " + counter);
+  } catch (error) {
+    text("storage-state", "localStorage unavailable: " + error.name);
+    log("storage: " + error.name);
+  }
+  text("count", String(counter));
+
+  function persist() {
+    text("count", String(counter));
+    try {
+      window.localStorage.setItem(STORAGE_KEY, String(counter));
+      log("storage: wrote counter = " + counter);
+    } catch (error) {
+      log("storage: write failed (" + error.name + ")");
+    }
+  }
+
+  document.getElementById("btn-count").addEventListener("click", function () {
+    counter += 1;
+    persist();
+  });
+
+  document.getElementById("btn-reset").addEventListener("click", function () {
+    counter = 0;
+    persist();
+  });
+
+  // ---- permissions ---------------------------------------------------
+  var list = document.getElementById("permissions");
+  PERMISSIONS.forEach(function (name) {
+    var item = document.createElement("li");
+    item.innerHTML = '<span class="dot"></span>' + name + "<b>declared</b>";
+    list.appendChild(item);
+  });
+
+  // ---- actions -------------------------------------------------------
+  document.getElementById("btn-copy").addEventListener("click", function () {
+    var report = [
+      "NAPP Demo Lab 1.0.0",
+      "url: " + location.href,
+      "viewport: " + window.innerWidth + "x" + window.innerHeight,
+      "dpr: " + (window.devicePixelRatio || 1),
+      "language: " + navigator.language,
+      "counter: " + counter,
+      "userAgent: " + userAgent
+    ].join("\n");
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(report).then(function () {
+        log("clipboard: report copied");
+      }, function () {
+        log("clipboard: permission denied");
+      });
+    } else {
+      log("clipboard: API unavailable in this runtime");
+    }
+  });
+
+  document.getElementById("btn-notify").addEventListener("click", function () {
+    // The host denies the Notification permission on purpose: no Windows toast
+    // is allowed, so an app draws its own notice inside the page.
+    inAppNotice("NAPP Demo Lab", "Notifications stay inside the app window.");
+    if (typeof Notification === "undefined") {
+      log("notifications: OS API unavailable (in-app notice shown)");
+      return;
+    }
+    if (Notification.permission === "granted") {
+      log("notifications: OS permission granted (in-app notice shown too)");
+      return;
+    }
+    Notification.requestPermission().then(function (state) {
+      log("notifications: OS permission " + state + " — in-app notice shown");
+    });
+  });
+
+  function inAppNotice(title, body) {
+    var notice = document.createElement("div");
+    notice.className = "notice";
+    notice.innerHTML = "<b></b><span></span>";
+    notice.querySelector("b").textContent = title;
+    notice.querySelector("span").textContent = body;
+    document.body.appendChild(notice);
+    setTimeout(function () { notice.remove(); }, 4000);
+  }
+
+  window.addEventListener("resize", function () {
+    text("info-viewport", window.innerWidth + " × " + window.innerHeight);
+  });
+
+  log("app: loaded");
+})();
+</script>
+</body>
+</html>

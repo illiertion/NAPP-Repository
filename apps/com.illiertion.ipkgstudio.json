@@ -1,0 +1,126 @@
+{
+  "format": "NAPP-APP",
+  "schema_version": 1,
+  "app": {
+    "id": "com.illiertion.ipkgstudio",
+    "name": "IPKG Studio",
+    "description": "Build .ipkg packages with your own app icon and window icon, window title/size/tray settings, a chosen save folder, live readiness checklist and the SDK/API reference downloaded from the store.",
+    "author": "ILLIERTION",
+    "category": "developer",
+    "icon": "https://raw.githubusercontent.com/ILLIERTION/NAPP-Repository/main/icons/com.illiertion.ipkgstudio.png",
+    "license": "MIT",
+    "homepage": "https://github.com/ILLIERTION/NAPP-Repository"
+  },
+  "compatibility": {
+    "runtime": "chromium",
+    "minimum_runtime_version": "1.4.0",
+    "minimum_sdk_version": "1.0.0",
+    "platforms": [
+      "windows-x64",
+      "linux-x64"
+    ]
+  },
+  "release": {
+    "latest": "1.4.0",
+    "versions": {
+      "1.4.0": {
+        "release_date": "2026-11-23",
+        "changelog": "Pick a separate window icon: the image the app window, taskbar button, Alt+Tab and the tray icon are drawn from, saved as metadata/window-icon.png and written into the manifest as window.icon. Needs NAPP runtime 1.4.0.",
+        "platforms": [
+          "windows-x64",
+          "linux-x64"
+        ],
+        "package": {
+          "type": "web",
+          "url": "https://raw.githubusercontent.com/ILLIERTION/NAPP-Repository/main/packages/com.illiertion.ipkgstudio/1.4.0.ipkg",
+          "sha256": "9a5ee24d2770c2ecc41315b2f4cc8ff9da4a9110796baa2b631654c8a379736a",
+          "size": 40691
+        }
+      },
+      "1.0.0": {
+        "release_date": "2026-11-23",
+        "changelog": "Initial release: manifest editor, file bundling, SHA-256 and download.",
+        "platforms": [
+          "windows-x64",
+          "linux-x64"
+        ],
+        "package": {
+          "type": "web",
+          "url": "https://raw.githubusercontent.com/ILLIERTION/NAPP-Repository/main/packages/com.illiertion.ipkgstudio/1.0.0.ipkg",
+          "sha256": "3d72160dcc339ecbede4a23d170196ece168da29798f85c6120a0a8757a1c999",
+          "size": 25269
+        }
+      },
+      "1.1.0": {
+        "release_date": "2026-11-23",
+        "changelog": "Guided 3-step build flow with a live readiness checklist, SDK/API reference downloaded from the repository, launcher language/theme and a responsive layout.",
+        "platforms": [
+          "windows-x64",
+          "linux-x64"
+        ],
+        "package": {
+          "type": "web",
+          "url": "https://raw.githubusercontent.com/ILLIERTION/NAPP-Repository/main/packages/com.illiertion.ipkgstudio/1.1.0.ipkg",
+          "sha256": "089212d50bcafb01e4f73bd1ef1a67aa6346330e33f9e3cfc479207f447ee7e5",
+          "size": 30899
+        }
+      },
+      "1.2.0": {
+        "release_date": "2026-11-23",
+        "changelog": "Full Korean/English translation with an in-app Settings tab (language, theme, notification test), live language switching, OS notification when a package is built, fixed result card disappearing after visiting the SDK tab.",
+        "platforms": [
+          "windows-x64",
+          "linux-x64"
+        ],
+        "package": {
+          "type": "web",
+          "url": "https://raw.githubusercontent.com/ILLIERTION/NAPP-Repository/main/packages/com.illiertion.ipkgstudio/1.2.0.ipkg",
+          "sha256": "5fab07d742e428ab70d87bbf08313a1b62f9abb48650a877c1172f0213c4e5e3",
+          "size": 35697
+        }
+      },
+      "1.2.1": {
+        "release_date": "2026-11-23",
+        "changelog": "The footer is hidden outside the Build tab instead of staying as an empty bar, and the SDK tab logs whether the repository document loaded.",
+        "platforms": [
+          "windows-x64",
+          "linux-x64"
+        ],
+        "package": {
+          "type": "web",
+          "url": "https://raw.githubusercontent.com/ILLIERTION/NAPP-Repository/main/packages/com.illiertion.ipkgstudio/1.2.1.ipkg",
+          "sha256": "2fdcc0c93d28b321d96a42d41dd98b75ed7e4f1bdebff5a122b2f5b9af1103b9",
+          "size": 35842
+        }
+      },
+      "1.2.2": {
+        "release_date": "2026-11-23",
+        "changelog": "The SDK article renderer no longer deletes the status line, so reloading the documentation works and the load result stays visible.",
+        "platforms": [
+          "windows-x64",
+          "linux-x64"
+        ],
+        "package": {
+          "type": "web",
+          "url": "https://raw.githubusercontent.com/ILLIERTION/NAPP-Repository/main/packages/com.illiertion.ipkgstudio/1.2.2.ipkg",
+          "sha256": "c2f3bbd7b7d89cdd7636531efb79ee60a4e19a9d42178e470a05ea0ba10d62b9",
+          "size": 35973
+        }
+      },
+      "1.3.0": {
+        "release_date": "2026-11-23",
+        "changelog": "Pick the app icon from any image, set the window title, opening size and tray icon, choose where the .ipkg is saved, and get window settings written into the manifest with the matching permission. Requires NAPP runtime 1.3.0.",
+        "platforms": [
+          "windows-x64",
+          "linux-x64"
+        ],
+        "package": {
+          "type": "web",
+          "url": "https://raw.githubusercontent.com/ILLIERTION/NAPP-Repository/main/packages/com.illiertion.ipkgstudio/1.3.0.ipkg",
+          "sha256": "f6aeb25ac624b1d0d2b78acf3e1368012a8b9812dde6fc6bb8c0d59fc21613dc",
+          "size": 39586
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "category": "developer",
+  "homepage": "https://github.com/ILLIERTION/NAPP-Repository",
+  "featured": true,
+  "changelog": {
+    "1.4.0": "Pick a separate window icon: the image the app window, taskbar button, Alt+Tab and the tray icon are drawn from, saved as metadata/window-icon.png and written into the manifest as window.icon. Needs NAPP runtime 1.4.0.",
+    "1.3.0": "Pick the app icon from any image, set the window title, opening size and tray icon, choose where the .ipkg is saved, and get window settings written into the manifest with the matching permission. Requires NAPP runtime 1.3.0.",
+    "1.2.2": "The SDK article renderer no longer deletes the status line, so reloading the documentation works and the load result stays visible.",
+    "1.2.1": "The footer is hidden outside the Build tab instead of staying as an empty bar, and the SDK tab logs whether the repository document loaded.",
+    "1.2.0": "Full Korean/English translation with an in-app Settings tab (language, theme, notification test), live language switching, OS notification when a package is built, fixed result card disappearing after visiting the SDK tab.",
+    "1.1.0": "Guided 3-step build flow with a live readiness checklist, SDK/API reference downloaded from the repository, launcher language/theme and a responsive layout.",
+    "1.0.0": "Initial release: manifest editor, file bundling, SHA-256 and download."
+  }
+}

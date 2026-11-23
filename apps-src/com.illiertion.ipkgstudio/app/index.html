@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>IPKG Studio</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <div class="mark" aria-hidden="true"><img src="/metadata/icon.png" alt=""></div>
+    <div class="title-block">
+      <p class="eyebrow">NAPP · IPKG STUDIO</p>
+      <h1 id="page-title">Build a package</h1>
+    </div>
+
+    <nav class="tabs" id="tabs" data-i18n-aria="tabsLabel" aria-label="Studio sections">
+      <button type="button" class="tab is-active" data-view="build" data-i18n="tabBuild">Build</button>
+      <button type="button" class="tab" data-view="docs" data-i18n="tabDocs">SDK &amp; API</button>
+      <button type="button" class="tab" data-view="settings" data-i18n="tabSettings">Settings</button>
+    </nav>
+
+    <div class="env" id="env-chip" data-i18n-title="envTitle" title="Values inherited from the NAPP launcher">
+      <span id="env-language">en</span>
+      <span id="env-theme">dark</span>
+    </div>
+  </header>
+
+  <main id="build-view">
+    <section class="panel">
+      <div class="panel-head">
+        <span class="step">1</span>
+        <h2 data-i18n="step1">Describe your app</h2>
+      </div>
+
+      <div class="grid">
+        <label><span data-i18n="fieldId">App ID</span>
+          <input id="app-id" value="com.example.hello" spellcheck="false" autocomplete="off">
+          <small data-i18n="hintId">Reverse-DNS, lowercase. Used as the install folder.</small>
+        </label>
+        <label><span data-i18n="fieldVersion">Version</span>
+          <input id="app-version" value="1.0.0" spellcheck="false" autocomplete="off">
+          <small data-i18n="hintVersion">Semantic version, e.g. 2.1.0.</small>
+        </label>
+        <label><span data-i18n="fieldName">Name</span>
+          <input id="app-name" value="Hello NAPP" autocomplete="off">
+        </label>
+        <label><span data-i18n="fieldAuthor">Author</span>
+          <input id="app-author" value="ILLIERTION" autocomplete="off">
+        </label>
+        <label class="wide"><span data-i18n="fieldDescription">Description</span>
+          <input id="app-description" value="A small web app packaged with IPKG Studio." autocomplete="off">
+          <small data-i18n="hintDescription">One sentence for the store listing.</small>
+        </label>
+        <label><span data-i18n="fieldLicense">License</span>
+          <input id="app-license" value="MIT" autocomplete="off">
+        </label>
+        <label><span data-i18n="fieldEntry">Entry point</span>
+          <input id="app-entry" value="app/index.html" spellcheck="false" autocomplete="off"
+                 list="entry-options">
+          <datalist id="entry-options"></datalist>
+          <small data-i18n="hintEntry">Page opened on launch; must be in the file list.</small>
+        </label>
+      </div>
+
+      <div class="subhead">
+        <h3 data-i18n="windowTitle">App window</h3>
+        <p data-i18n="windowHint">Title, opening size, window icon and tray icon are written into the manifest and applied by the launcher. Changing them adds the “window” permission.</p>
+      </div>
+      <div class="grid">
+        <label class="wide"><span data-i18n="fieldWindowTitle">Window title</span>
+          <input id="window-title" data-i18n-placeholder="hintWindowTitle"
+                 placeholder="Defaults to the app name" autocomplete="off">
+        </label>
+        <label><span data-i18n="fieldWindowWidth">Window width</span>
+          <input id="window-width" type="number" min="480" max="3840" step="10" value="1100">
+        </label>
+        <label><span data-i18n="fieldWindowHeight">Window height</span>
+          <input id="window-height" type="number" min="360" max="2160" step="10" value="760">
+        </label>
+        <div class="icon-row wide">
+          <img id="window-icon-preview" class="icon-preview" alt="">
+          <div class="icon-actions">
+            <div class="row">
+              <button type="button" id="pick-window-icon" data-i18n="chooseWindowIcon">Choose window icon…</button>
+              <button type="button" class="link" id="clear-window-icon" data-i18n="clearIcon">Remove</button>
+            </div>
+            <small class="icon-info" id="window-icon-info"></small>
+          </div>
+          <input type="file" id="window-icon-input" accept="image/png,image/jpeg,image/webp" hidden>
+        </div>
+        <label class="check wide">
+          <input type="checkbox" id="window-tray">
+          <span data-i18n="windowTray">Keep a tray icon; closing the window leaves the app running in the notification area</span>
+        </label>
+      </div>
+
+      <div class="subhead">
+        <h3 data-i18n="permTitle">Permissions</h3>
+        <p data-i18n="permHint">The user approves these in a system dialog when the package is installed.</p>
+      </div>
+      <div class="permissions" id="permissions"></div>
+      <p class="note" data-i18n="permNote">Notifications appear as real system notifications; Chromium never shows its own popups or prompts.</p>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <span class="step">2</span>
+        <h2 data-i18n="step2">Add your files</h2>
+      </div>
+
+      <div class="drop" id="drop">
+        <strong data-i18n="dropTitle">Drop files or a folder here</strong>
+        <span data-i18n="dropHint">Everything is stored relative to the package root.</span>
+        <div class="row">
+          <button type="button" id="pick-files" data-i18n="addFiles">Add files</button>
+          <button type="button" id="pick-folder" data-i18n="addFolder">Add folder</button>
+        </div>
+        <input type="file" id="file-input" multiple hidden>
+        <input type="file" id="folder-input" webkitdirectory multiple hidden>
+      </div>
+
+      <div class="files-head">
+        <span id="file-summary">0 files</span>
+        <button type="button" class="link" id="clear-files" data-i18n="clear">Clear</button>
+      </div>
+      <ul id="file-list" class="files"></ul>
+
+      <div class="subhead">
+        <h3 data-i18n="iconTitle">App icon</h3>
+        <p data-i18n="iconHint">The launcher, store and shortcuts use this image. It is stored as metadata/icon.png.</p>
+      </div>
+      <div class="icon-row">
+        <img id="icon-preview" class="icon-preview" alt="">
+        <div class="icon-actions">
+          <div class="row">
+            <button type="button" id="pick-icon" data-i18n="chooseIcon">Choose image…</button>
+            <button type="button" class="link" id="clear-icon" data-i18n="clearIcon">Remove</button>
+          </div>
+          <small class="icon-info" id="icon-info"></small>
+        </div>
+        <input type="file" id="icon-input" accept="image/png,image/jpeg,image/webp" hidden>
+      </div>
+
+      <label class="check">
+        <input type="checkbox" id="auto-icon" checked>
+        <span data-i18n="autoIcon">Add a generated icon and preview when the package has none</span>
+      </label>
+
+      <div class="subhead">
+        <h3 data-i18n="saveTitle">Save the package to</h3>
+        <p data-i18n="saveHint">Leave it on the app folder or pick any folder; the host only writes where you chose.</p>
+      </div>
+      <div class="save-row">
+        <span class="mono save-path" id="save-path" data-i18n="saveDefault">This app's data folder → downloads</span>
+        <button type="button" id="pick-folder" data-i18n="chooseFolder">Choose folder…</button>
+        <button type="button" class="link" id="reset-folder" data-i18n="useDefault">Use default</button>
+      </div>
+
+      <div class="subhead">
+        <h3 data-i18n="checklistTitle">Ready to build</h3>
+      </div>
+      <ul class="checklist" id="checklist"></ul>
+    </section>
+  </main>
+
+  <section id="docs-view" hidden>
+    <aside class="docs-side">
+      <div class="docs-side-head">
+        <h2 data-i18n="docsTitle">SDK &amp; API</h2>
+        <p data-i18n="docsSub">Downloaded from the repository, not bundled with this app.</p>
+      </div>
+      <input type="search" id="docs-search" data-i18n-placeholder="docsSearch" placeholder="Search the SDK">
+      <ul id="docs-list" class="docs-list"></ul>
+      <button type="button" class="link" id="docs-reload" data-i18n="docsReload">Reload from repository</button>
+      <p class="docs-source" id="docs-source"></p>
+    </aside>
+    <article class="docs-body" id="docs-body">
+      <div class="docs-status" id="docs-status" data-i18n="docsIdle">Open the SDK tab to load the documentation.</div>
+      <div id="docs-content"></div>
+    </article>
+  </section>
+
+  <section id="settings-view" class="panel settings" hidden>
+    <div class="panel-head">
+      <h2 data-i18n="settingsTitle">Settings</h2>
+    </div>
+
+    <div class="setting-row">
+      <div class="setting-text">
+        <strong data-i18n="setLanguage">Language</strong>
+        <small id="set-language-hint"></small>
+      </div>
+      <select id="set-language">
+        <option value="auto" data-i18n="optAuto">Follow NAPP launcher</option>
+        <option value="ko">한국어</option>
+        <option value="en">English</option>
+      </select>
+    </div>
+
+    <div class="setting-row">
+      <div class="setting-text">
+        <strong data-i18n="setTheme">Theme</strong>
+        <small data-i18n="setThemeHint">Auto follows the NAPP launcher.</small>
+      </div>
+      <select id="set-theme">
+        <option value="auto" data-i18n="optAuto">Follow NAPP launcher</option>
+        <option value="dark" data-i18n="optDark">Dark</option>
+        <option value="light" data-i18n="optLight">Light</option>
+      </select>
+    </div>
+
+    <div class="setting-row">
+      <div class="setting-text">
+        <strong data-i18n="setNotify">System notifications</strong>
+        <small id="set-notify-hint"></small>
+      </div>
+      <button type="button" id="set-notify-test" data-i18n="notifyTest">Send a test notification</button>
+    </div>
+
+    <p class="note" data-i18n="setRestartNote">Changing the language inside NAPP Launcher reaches this app the next time it starts. The setting above switches it immediately.</p>
+  </section>
+
+  <section class="result" id="result" hidden>
+    <h2 data-i18n="resultTitle">Package ready</h2>
+    <dl>
+      <dt data-i18n="resFile">File</dt><dd id="result-name">—</dd>
+      <dt data-i18n="resSaved">Saved as</dt><dd class="mono" id="result-path">—</dd>
+      <dt data-i18n="resSize">Size</dt><dd id="result-size">—</dd>
+      <dt data-i18n="resEntries">Entries</dt><dd id="result-entries">—</dd>
+      <dt>SHA-256</dt><dd class="mono" id="result-sha">—</dd>
+    </dl>
+    <p class="hint" data-i18n="resHint">Double-click the .ipkg to install it. The launcher asks you to approve the requested permissions in a system dialog, and you can remove the app later from Library → ⋯ → Remove.</p>
+  </section>
+
+  <div class="problems" id="problems" hidden></div>
+
+  <footer id="footer">
+    <button type="button" class="primary" id="build" data-i18n="build">Build .ipkg</button>
+    <span class="note" id="footer-note" data-i18n="footer">Manifest is written at the archive root. Entry must exist in the file list.</span>
+  </footer>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
